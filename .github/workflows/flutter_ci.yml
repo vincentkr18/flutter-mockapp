@@ -8,58 +8,58 @@ on:
 
 jobs:
 
-  # android:
-  #   name: Build Android APK
-  #   runs-on: ubuntu-latest
+  android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     # 1️⃣ Checkout code
-  #     - uses: actions/checkout@v4
+    steps:
+      # 1️⃣ Checkout code
+      - uses: actions/checkout@v4
 
-  #     # 2️⃣ Cache Flutter packages
-  #     - name: Cache Flutter Pub
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: |
-  #           ~/.pub-cache
-  #           ${{ github.workspace }}/.dart_tool
-  #         key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.yaml') }}
+      # 2️⃣ Cache Flutter packages
+      - name: Cache Flutter Pub
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            ${{ github.workspace }}/.dart_tool
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.yaml') }}
 
-  #     # 3️⃣ Cache Gradle
-  #     - name: Cache Gradle
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: |
-  #           ~/.gradle/caches
-  #           ~/.gradle/wrapper
-  #         key: ${{ runner.os }}-gradle-${{ hashFiles('android/build.gradle') }}
+      # 3️⃣ Cache Gradle
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/build.gradle') }}
 
-  #     # 4️⃣ Install Flutter
-  #     - uses: subosito/flutter-action@v2
-  #       with:
-  #         channel: stable
-  #         flutter-version: '3.38.6'
+      # 4️⃣ Install Flutter
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.38.6'
 
-  #     # 5️⃣ Get dependencies
-  #     - run: flutter pub get
+      # 5️⃣ Get dependencies
+      - run: flutter pub get
 
-  #     # 6️⃣ Run dummy test (always passes)
-  #     - run: flutter test
+      # 6️⃣ Run dummy test (always passes)
+      - run: flutter test
 
-  #     # 7️⃣ Increase Gradle memory for CI
-  #     - run: |
-  #         echo "org.gradle.jvmargs=-Xmx4g" >> android/gradle.properties
-  #         echo "org.gradle.parallel=true" >> android/gradle.properties
-  #         echo "org.gradle.configureondemand=true" >> android/gradle.properties
+      # 7️⃣ Increase Gradle memory for CI
+      - run: |
+          echo "org.gradle.jvmargs=-Xmx4g" >> android/gradle.properties
+          echo "org.gradle.parallel=true" >> android/gradle.properties
+          echo "org.gradle.configureondemand=true" >> android/gradle.properties
 
-  #     # 8️⃣ Build APK (single ABI for speed)
-  #     - run: flutter build apk --release --target-platform=android-arm64 --android-skip-build-dependency-validation
+      # 8️⃣ Build APK (single ABI for speed)
+      - run: flutter build apk --release --target-platform=android-arm64 --android-skip-build-dependency-validation
 
-  #     # 9️⃣ Upload APK artifact
-  #     - uses: actions/upload-artifact@v4
-  #       with:
-  #         name: android-apk
-  #         path: build/app/outputs/flutter-apk/app-release.apk
+      # 9️⃣ Upload APK artifact
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
 
   ios:
     name: Build iOS IPA
