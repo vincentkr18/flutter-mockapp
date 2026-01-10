@@ -18,7 +18,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key}); // test comment
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +27,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme(context),
       home: const LoginScreen(),
-    );
+    ); 
   }
 }
