@@ -13,45 +13,55 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout code
+      # 1️⃣ Checkout
       - uses: actions/checkout@v4
 
-      # 2️⃣ Cache Flutter packages
+      # 2️⃣ Install Flutter
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.38.6'
+
+      # 3️⃣ Cache Flutter pub packages
       - name: Cache Flutter Pub
         uses: actions/cache@v3
         with:
           path: |
             ~/.pub-cache
             ${{ github.workspace }}/.dart_tool
-          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.yaml') }}
+          key: ${{ runner.os }}-flutter-pub-v1-${{ hashFiles('pubspec.yaml') }}
 
-      # 3️⃣ Cache Gradle
+      # 4️⃣ Cache Gradle (NEW KEY – avoids old AGP)
       - name: Cache Gradle
         uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('android/build.gradle') }}
+          key: ${{ runner.os }}-gradle-agp891-v1
 
-      # 4️⃣ Install Flutter
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          flutter-version: '3.38.6'
+      # 5️⃣ Make gradlew executable
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
 
-      # 5️⃣ Get dependencies
+      # 6️⃣ Verify Gradle + AGP versions
+      - name: Verify Gradle & AGP
+        run: |
+          cd android
+          ./gradlew --version
+
+      # 7️⃣ Get dependencies
       - run: flutter pub get
 
-      # 6️⃣ Run dummy test (always passes)
+      # 8️⃣ Run tests
       - run: flutter test
 
-      # 🔐 NEW: Decode Android keystore
+      # 🔐 Decode keystore
       - name: Decode Android keystore
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/upload-keystore.jks
 
-      # 🔐 NEW: Create key.properties
+      # 🔐 Create key.properties
       - name: Create key.properties
         run: |
           cat <<EOF > android/key.properties
@@ -61,17 +71,18 @@ jobs:
           keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
           EOF
 
-
-      # 7️⃣ Increase Gradle memory for CI
-      - run: |
+      # 9️⃣ Gradle performance config
+      - name: Configure Gradle
+        run: |
           echo "org.gradle.jvmargs=-Xmx4g" >> android/gradle.properties
           echo "org.gradle.parallel=true" >> android/gradle.properties
           echo "org.gradle.configureondemand=true" >> android/gradle.properties
 
-      # 8️⃣ Build APK (single ABI for speed)
-      - run: flutter build apk --release --target-platform=android-arm64 --android-skip-build-dependency-validation
+      # 🔟 Build APK
+      - name: Build APK
+        run: flutter build apk --release --target-platform=android-arm64
 
-      # 9️⃣ Upload APK artifact
+      # 1️⃣1️⃣ Upload artifact
       - uses: actions/upload-artifact@v4
         with:
           name: android-apk
@@ -84,22 +95,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1️⃣ Install Flutter
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
           flutter-version: '3.38.6'
 
-      # 2️⃣ Get dependencies
       - run: flutter pub get
 
-      # 3️⃣ Build iOS without code signing (CI test)
+      - run: flutter test
+
       - run: flutter build ios --release --no-codesign
 
-      # 4️⃣ Build IPA without code signing
       - run: flutter build ipa --no-codesign
 
-      # 5️⃣ Upload IPA artifact
       - uses: actions/upload-artifact@v4
         with:
           name: ios-build
