@@ -45,5 +45,23 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Google Sign-In Configuration -->
+	<!-- URL Scheme for Google Sign-In callback -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<!-- Replace with your actual reversed iOS Client ID -->
+				<!-- Example: com.googleusercontent.apps.123456789-ios456 -->
+				<string>com.googleusercontent.apps.123456789-ios</string>
+			</array>
+		</dict>
+	</array>
+	<!-- Minimum iOS version -->
+	<key>MinimumOSVersion</key>
+	<string>13.0</string>
 </dict>
 </plist>
