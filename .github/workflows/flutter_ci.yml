@@ -46,6 +46,22 @@ jobs:
       # 6️⃣ Run dummy test (always passes)
       - run: flutter test
 
+      # 🔐 NEW: Decode Android keystore
+      - name: Decode Android keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/upload-keystore.jks
+
+      # 🔐 NEW: Create key.properties
+      - name: Create key.properties
+        run: |
+          cat <<EOF > android/key.properties
+          storeFile=upload-keystore.jks
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          EOF
+
+
       # 7️⃣ Increase Gradle memory for CI
       - run: |
           echo "org.gradle.jvmargs=-Xmx4g" >> android/gradle.properties
